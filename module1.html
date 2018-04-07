@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+       <meta charset="UTF-8">
+       <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+       <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+  </head>
+  <body>
+      <div id="root"></div>
+
+      <script type="text/babel">
+          function CarStoreTitle() {
+            return (
+                <div>
+                    <h2>Welcome to React Transportation</h2>
+                    The best place to buy vehicles online<p/>
+                </div>
+            )
+          }
+
+          function Select(props) {
+            var ops = props.options.map
+            return (
+                <div>
+                    {props.legend}
+                    <select>
+                        {props.options.map(function(it) {
+                            return <option value={it}>{it}</option>
+                        })}
+                    </select>
+                </div>
+            )
+          }
+
+          function CarStoreOptions() {
+            return (
+                <div>
+                    <h2>Choose Options</h2>
+                    <div>
+                        New Only
+                        <input type="checkbox" id="coding" name="interest" value="coding" checked/>
+                    </div><p/>
+                    <Select legend="Select type" options={["All", "Cars", "Trucks", "Convertibles"]}/>
+                </div>
+            )
+          }
+
+          function Car(props) {
+              return (
+                <table>
+                    <tr>
+                        <th>Year</th>
+                        <th>Model</th>
+                        <th>Price</th>
+                        <th>Buy</th>
+                    </tr>
+                    <tr>
+                        <td>{props.year}</td>
+                        <td>{props.model}</td>
+                        <td>{props.price}</td>
+                        <td><button>Buy Now</button></td>
+                    </tr>
+                </table>
+            )
+          }
+
+          function CarType(props) {
+            return (
+                <div>
+                    <h2>{props.legend}</h2>
+                    <ul>
+                    {props.cars.map(function(item) {
+                        return <Car year={item.year} model={item.model} price={item.price} />
+                    })}
+                    </ul>
+                </div>
+            )
+          }
+
+          function AllCars() {
+              var cars = [
+                {year:"2013", model:"B", price:"$32000"},
+                {year:"2011", model:"B", price:"$4400"},
+                {year:"2016", model:"B", price:"$15500"},
+              ]
+              return (
+                <div>
+                    <CarType legend="Cars" cars={cars}/>
+                </div>
+              )
+          }
+
+          function AllTrucks() {
+              var trucks = [
+                {year:"2014", model:"D", price:"$18000"},
+                {year:"2013", model:"E", price:"$5200"},
+              ]
+              return (
+                <div>
+                    <CarType legend="Trucks" cars={trucks}/>
+                </div>
+              )
+          }
+
+          function AllConvertibles() {
+              var convertibles = [
+                {year:"2009", model:"F", price:"$2000"},
+                {year:"2010", model:"G", price:"$6000"},
+                {year:"2012", model:"H", price:"$12500"},
+                {year:"2017", model:"M", price:"$50000"},
+              ]
+              return (
+                <div>
+                    <CarType legend="Convertibles" cars={convertibles}/>
+                </div>
+              )
+          }
+
+          function CarStore() {
+            return (
+                <div>
+                    <CarStoreTitle/>
+                    <CarStoreOptions/>
+                    <AllCars/>
+                    <AllTrucks/>
+                    <AllConvertibles/>
+                </div>
+            )
+          }
+
+          ReactDOM.render(
+              <CarStore/>,
+              document.getElementById("root")
+          )
+      </script>
+  
+  </body>
+</html>
