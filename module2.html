@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+       <meta charset="UTF-8">
+       <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+       <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+  </head>
+  <body>
+      <div id="root"></div>
+
+      <script type="text/babel">
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+          class Question extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = {question:"", answer:0, options:[]}
+            }
+
+            generateNewQuestion() {
+                let a = randomInt(1, 12)
+                let b = randomInt(1, 12)
+                let correctOption = randomInt(0, 3)
+                let options = []
+                for (let i = 0; i < 4; i++) {
+                    options.push(randomInt(0, 2*a*b))
+                }
+                options[correctOption] = a*b
+                this.setState({question:"What is " + a + "x" + b + "?", answer:correctOption, options:options})
+            }
+
+            componentWillMount() {
+                this.generateNewQuestion()
+            }
+
+            correctAnswer() {
+                this.props.correctAnswer()
+                this.generateNewQuestion()
+            }
+
+            incorrectAnswer() {
+                this.props.incorrectAnswer()
+                this.generateNewQuestion()
+            }
+
+              render() {
+                let buttons = []
+                let options = this.state.options
+                for (let i = 0; i < options.length; i++) {
+                    let op = options[i]
+                    if (i == this.state.answer) {
+                        buttons.push(<button onClick={() => this.correctAnswer()}>{op}</button>)
+                    } else {
+                        buttons.push(<button onClick={() => this.incorrectAnswer()}>{op}</button>)
+                    }
+                }
+                return (
+                    <div>
+                        {this.state.question}<p/>
+                        {buttons.map((item) => {
+                            return <div>{item}<p/></div>
+                        })}
+                    </div>
+                )
+              }
+          }
+
+
+          function ScoreBoard(props) {
+            return (
+                <div>
+                    Correct: {props.correct} <p/>
+                    Incorrect: {props.incorrect}
+                </div>
+            )
+          }
+
+          class TriviaApp extends React.Component {
+            constructor(props) {
+                super(props)
+                this.correctAnswer = this.correctAnswer.bind(this)
+                this.incorrectAnswer = this.incorrectAnswer.bind(this)
+                this.state = {correct: 0, incorrect: 0}
+            }
+
+            correctAnswer() {
+                console.log("Correct answer");
+                this.setState((prevState, props) => {
+                    return {
+                        correct: prevState.correct + 1,
+                        incorrect: prevState.incorrect,
+                    }
+                })
+            }
+
+            incorrectAnswer() {
+                console.log("Incorrect answer");
+                this.setState((prevState, props) => {
+                    return {
+                        correct: prevState.correct,
+                        incorrect: prevState.incorrect + 1,
+                    }
+                })
+            }
+
+            render() {
+                return (
+                    <div>
+                        <Question correctAnswer={this.correctAnswer} incorrectAnswer={this.incorrectAnswer}/>
+                        <ScoreBoard correct={this.state.correct} incorrect={this.state.incorrect}/>
+                    </div>
+                )
+            }
+          }
+
+          ReactDOM.render(
+              <TriviaApp/>,
+              document.getElementById("root")
+          )
+      </script>
+  
+  </body>
+</html>
