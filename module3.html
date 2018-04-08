@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+       <meta charset="UTF-8">
+       <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+       <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+  </head>
+  <body>
+      <div id="root"></div>
+
+      <script type="text/babel">
+
+          class NewStudent extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = this.cleanState()
+                this.handleAdd = this.handleAdd.bind(this)
+                this.handleChange = this.handleChange.bind(this)
+            }
+
+            cleanState() {
+                return {
+                    firstName: "", 
+                    lastName: "", 
+                    activity: "Cooking", 
+                    restrictions: {dietary:false, physical:false, medical: false}, 
+                }
+            }
+
+            handleAdd() {
+                let s = this.state
+                if (s.firstName == "") {
+                    alert("Must enter first name")
+                    return
+                }
+                if (s.lastName == "") {
+                    alert("Must enter last name")
+                    return
+                }
+                let rest = this.state.restrictions
+                s.restrictions = ""
+                if (rest.dietary) {
+                    s.restrictions += "a"
+                }
+                if (rest.physical) {
+                    s.restrictions += "b"
+                }
+                if (rest.medical) {
+                    s.restrictions += "c"
+                }
+                this.props.handleAdd(s)
+                this.setState(this.cleanState())
+            }
+
+            handleChange(setter, val) {
+                this.setState((prevState) => {
+                    setter(prevState, val)
+                    return prevState
+                })
+                console.log(this.state)
+            }
+
+            render() {
+                var style = {display: "flex"}
+                return (
+                    <div>
+                    <label style={style}>First Name</label>
+                    <input style={style} value={this.state.firstName} onChange={(event) => this.handleChange((s, val) => s.firstName = val, event.target.value)}></input>
+                    <label style={style}>Last Name</label>
+                    <input style={style} value={this.state.lastName} onChange={(event) => this.handleChange((s, val) => s.lastName = val, event.target.value)}></input>
+                    <label style={style}>Select Activity</label>
+                    <select value={this.state.activity} onChange={(event) => this.handleChange((s, val) => s.activity = val, event.target.value)}>
+                        <option value="Cooking">Cooking</option>
+                        <option value="Painting">Painting</option>
+                        <option value="Science Lab">Science Lab</option>
+                        <option value="Swimming">Swimming</option>
+                    </select>
+                    <label style={style}>Check all that apply</label>
+                    <input type="checkbox" checked={this.state.restrictions.dietary} onChange={(event) => this.handleChange((s, val) => s.restrictions.dietary = val, event.target.checked)}/><label>a) Dietary Restrictions</label><br/>
+                    <input type="checkbox" checked={this.state.restrictions.physical} onChange={(event) => this.handleChange((s, val) => s.restrictions.physical = val, event.target.checked)}/><label>b) Physical Disabilities</label><br/>
+                    <input type="checkbox" checked={this.state.restrictions.medical} onChange={(event) => this.handleChange((s, val) => s.restrictions.medical = val, event.target.checked)}/><label>c) Medical Needs</label><br/>
+                    <button onClick={this.handleAdd}>Submit</button>
+                    </div>
+                )
+            }
+          }
+
+          class Students extends React.Component {
+
+            constructor(props) {
+                super(props)
+                this.handleRemove = this.handleRemove.bind(this)
+                this.handleAdd = this.handleAdd.bind(this)
+                this.state = {students: [
+                    {id:0, firstName: "John", lastName: "Smith", activity: "Cooking", restrictions: "c"},
+                    {id:1, firstName: "Jane", lastName: "Doe", activity: "Science Lab", restrictions: ""},
+                    {id:2, firstName: "Bob", lastName: "Thompson", activity: "Painting", restrictions: "ab"},
+                    {id:3, firstName: "Sally", lastName: "Miller", activity: "Science Lab", restrictions: "abc"},
+                    {id:4, firstName: "Fred", lastName: "James", activity: "Swimming", restrictions: "a"},
+                    ],
+                    nextId: 5
+                }
+            }
+
+            handleRemove(id) {
+                this.setState((prevState) => {
+                        return {students: prevState.students.filter((s) => s.id != id)}
+                    })
+            }
+
+            handleAdd(student) {
+                this.setState((prevState) => {
+                        student.id = prevState.nextId
+                        let students = prevState.students.slice()
+                        students.push(student)
+                        return {
+                            students: students,
+                            nextId: prevState.nextId + 1
+                        }
+                    })
+            }
+
+            render() {
+                let studentList = this.state.students.map((student) => {
+                    return (<tr>
+                       <td><button onClick={() => this.handleRemove(student.id)}>x</button></td> 
+                       <td>{student.firstName}</td> 
+                       <td>{student.lastName}</td> 
+                       <td>{student.activity}</td> 
+                       <td>{student.restrictions}</td> 
+                    </tr>)
+                })
+                return (
+                        <div>
+                        <NewStudent handleAdd={this.handleAdd}/>
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Activity</th>
+                                <th>Restrictions</th>
+                            </tr>
+                            {studentList}
+                        </table>
+                        </div>
+                    )
+            }
+          }
+
+          ReactDOM.render(
+              <Students/>,
+              document.getElementById("root")
+          )
+      </script>
+  
+  </body>
+</html>
